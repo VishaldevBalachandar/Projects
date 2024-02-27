@@ -1,0 +1,49 @@
+% Example script to test speaker recognition accuracy and plot a confusion matrix
+
+% Specify the directory containing the audio files
+audioDir = '/Users/siddharth/Downloads/speech_commands_v0.02/on';
+
+% Get a list of all audio files in the directory
+audioFiles = dir(fullfile(audioDir, '*.wav'));
+
+% Initialize variables for confusion matrix
+predictedLabels = [];
+trueLabels = [];
+
+% Iterate through the audio files
+for i = 1:length(audioFiles)
+    filePath = fullfile(audioDir, audioFiles(i).name);
+
+    % Label each file with a unique numeric identifier
+    % Extract numeric label from the file name
+    groundTruthLabel = extractLabelFromFileName(audioFiles(i).name);
+
+    % Call the modified function
+    [result, predictedLabel] = time_domain_classification(filePath, 10000, groundTruthLabel);
+
+    % Accumulate results
+    predictedLabels = [predictedLabels; predictedLabel];
+    trueLabels = [trueLabels; groundTruthLabel];
+end
+
+% Ensure trueLabels and predictedLabels are column vectors
+trueLabels = trueLabels(:);
+predictedLabels = predictedLabels(:);
+
+% Create confusion matrix
+confMatrix = confusionmat(trueLabels, predictedLabels);
+
+% Normalize the confusion matrix to values between 0 and 1
+confMatrixNormalized = confMatrix / sum(confMatrix(:));
+
+% Plot confusion matrix as a heatmap
+figure;
+heatmap(confMatrixNormalized, 'Colormap', jet, 'ColorbarVisible', 'on', 'XLabel', 'Predicted', 'YLabel', 'True', 'ColorLimits', [0, 1]);
+title('Confusion Matrix');
+
+% Function to extract numeric label from file name
+function label = extractLabelFromFileName(fileName)
+    % Extract numeric label from file name
+    parts = split(fileName, '_');
+    label = str2double(parts{1});  % Assuming the label is the first part before "_nohash"
+end
