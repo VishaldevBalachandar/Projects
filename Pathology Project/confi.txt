@@ -1,0 +1,14 @@
+receptor = protein.pdbqt
+ligand = ligand.pdbqt
+
+out = out.pdbqt
+
+center_x =  -14.792429
+center_y =  46.108089
+center_z =  -40.410036
+
+size_x = 20
+size_y = 20
+size_z = 20
+
+exhaustiveness = 8
